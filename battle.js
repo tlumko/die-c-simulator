@@ -150,6 +150,30 @@ const applyAfterAttackUpgrades = (attacker, victim, attackerUpgrades, defenderUp
     return [attacker, victim]
 }
 
+const prepareVariation = (attackerUpgrades, defenderUpgrades) => {
+    const variationUpgrades = [
+        ...attackerUpgrades.filter(upgrade => upgrade.type === 'variation').map(upgrade => ({ side: 'a', upgrade })),
+        ...defenderUpgrades.filter(upgrade => upgrade.type === 'variation').map(upgrade => ({ side: 'd', upgrade }))
+    ]
+
+    if (variationUpgrades.length > 1) {
+        throw 'only 1 variation upgrade per simulation'
+    }
+
+    let variation
+
+    if (variationUpgrades[0]) {
+        variation = {
+            battles: [],
+            side: variationUpgrades[0].side,
+            upgrade: variationUpgrades[0].upgrade,
+            subType: variationUpgrades[0].upgrade.subType
+        }
+    }
+
+    return variation
+}
+
 const prepareBattle = (sideA, sideD, toLog, attackerUpgrades, defenderUpgrades, variation) => {
     const aDices = sideA.map(d => ({ side: 'a', type: d, value: random(d) }))
     const dDices = sideD.map(d => ({ side: 'd', type: d, value: random(d) }))
@@ -229,27 +253,9 @@ const runBattle = (arena, side, toLog, attackerUpgrades, defenderUpgrades, varia
 }
 
 const battle = (sideA, sideD, toLog = false, attackerUpgrades = [], defenderUpgrades = []) => {
-    const variationUpgrades = [
-        ...attackerUpgrades.filter(upgrade => upgrade.type === 'variation').map(upgrade => ({ side: 'a', upgrade })),
-        ...defenderUpgrades.filter(upgrade => upgrade.type === 'variation').map(upgrade => ({ side: 'd', upgrade }))
-    ]
+    const initialVariation = prepareVariation(attackerUpgrades, defenderUpgrades)
 
-    if (variationUpgrades.length > 1) {
-        throw 'only 1 variation upgrade per simulation'
-    }
-
-    let variation, side, arena
-
-    if (variationUpgrades[0]) {
-        variation = {
-            battles: [],
-            side: variationUpgrades[0].side,
-            upgrade: variationUpgrades[0].upgrade,
-            subType: variationUpgrades[0].upgrade.subType
-        }
-    }
-
-    ; ({ arena, side, variation } = prepareBattle(sideA, sideD, toLog, attackerUpgrades, defenderUpgrades, variation))
+    let { arena, side, variation } = prepareBattle(sideA, sideD, toLog, attackerUpgrades, defenderUpgrades, initialVariation)
 
     const result = runBattle(arena, side, toLog, attackerUpgrades, defenderUpgrades, variation)
 

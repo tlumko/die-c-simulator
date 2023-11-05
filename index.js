@@ -72,7 +72,8 @@ const sideAUpgrades = []
 const sideDUpgrades = []
 
 
-analyze([4, 4, 4, 4], [10, 10], { side1Upgrades: [d4plusOne] })
+analyze([6, 6, 6], [10, 10], { side1Upgrades: [d6Transfer] })
+analyze([6, 6, 6], [10, 10], { side1Upgrades: [] })
 
 // analyze(sideA, sideD, { side1Upgrades: [], side2Upgrades: [] })
 // analyze(sideA, sideD, { side1Upgrades: [], side2Upgrades: [d8Superiority] })
